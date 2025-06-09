@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE concept PUBLIC "-//OASIS//DTD DITA Concept//EN" "concept.dtd">
+<concept id="concept_arvg_4205" xml:lang="en">
+    <title>Using DITATea</title>
+    <conbody>
+        <section>
+            <title>Purpose</title>
+            <p>The DITATea library defines a set of reusable functions and templates for inspecting, refining, and formatting DITA elements. It supports the implementation of higher-level logic by exposing reliable queries about element properties and classification, as well as by providing formatting mechanisms for supported output types.</p>
+        </section>
+        <section id="section_lks_zc4_nfc">
+            <title>Placement</title>
+            <p><filepath>lib/ditatea</filepath></p>
+        </section>
+        
+        <section>
+            <title>Features</title>
+            <ul>
+                <li><keyword>Element Queries</keyword>—retrieves element IDs, languages, topic
+                    depth, titles, metadata, and DITA class membership</li>
+                <li><keyword>Pre-Formatting Processing</keyword>—prepares DITA content for
+                    formatting by normalizing structure and separating mixed content</li>
+                <li><keyword>Output Formatting</keyword>—formats DITA content to output formats
+                    using the <xref href="formatting-strategy.dita">superclass-based autoformat
+                        approach</xref></li>
+            </ul>
+            <p>The DITATea library currently supports the following output formats:</p>
+            <ul>
+                <li>HTML5</li>
+                <li>JSON/JS</li>
+            </ul>
+        </section>
+        
+        <section>
+            <title>Usage</title>
+            <p>The following table lists the recommended entry points for using the DITATea library in various stages of DITA processing. Each stage corresponds to a dedicated stylesheet.</p>
+            <table>
+                <tgroup cols="2">
+                    <thead>
+                        <row>
+                            <entry>Processing Stage</entry>
+                            <entry>Stylesheet</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>Applying queries to DITA content</entry>
+                            <entry><filepath>lib/ditatea/queries/queries.xsl</filepath></entry>
+                        </row>
+                        <row>
+                            <entry>Preparing content before formatting</entry>
+                            <entry><filepath>lib/ditatea/refine/refine.xsl</filepath></entry>
+                        </row>
+                        <row>
+                            <entry>Formatting DITA content to HTML</entry>
+                            <entry><filepath>lib/ditatea/html/html.xsl</filepath></entry>
+                        </row>
+                        <row>
+                            <entry>Formatting DITA content to JSON/JS</entry>
+                            <entry><filepath>lib/ditatea/json/json.xsl</filepath></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+            <note id="note_y3j_cd4_nfc" type="important">Usually, there is no need to import the
+                queries stylesheet directly. Once either the refine or formatting modules are
+                imported, the required queries are included automatically. Moreover, importing
+                    <filepath>queries.xsl</filepath> directly in a base layout or customization may
+                prevent you from overloading queries for formatting purposes.</note>
+        </section>
+    </conbody>
+</concept>

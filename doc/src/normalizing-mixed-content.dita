@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="reference_iier_0jeu" xml:lang="en">
+    <title>Normalizing Mixed Content</title>
+    <refbody>
+        
+        <section>
+            <title>Purpose</title>
+            <p>Mixed content refers to an element that contains both block elements and inline nodes. Text nodes that are not wrapped in elements are considered inline nodes as well. In this context, we refer to the element as a <term>container</term> of mixed content.</p>
+            <p>For example, the following snippet illustrates a <xmlelement>p</xmlelement> element that contains both a text node and a list:</p>
+            <pre>&lt;p&gt;
+  This is a text introduction.
+  &lt;ul&gt;
+    &lt;li&gt;An item in the list&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/p&gt;      </pre>
+            <p>Mixed content complicates formatting because it interferes with the regular vertical spacing of block elements. For instance, a list that follows inline text may visually "stick" to the preceding text, even if a top margin is applied to the list. To ensure predictable and clean layout, we normalize mixed content in a preprocessing stage before output generation.</p>
+            <p>The normalization process wraps isolated inline text nodes in appropriate containers such as <xmlelement>div</xmlelement>. This practice is applied consistently throughout the document by the <codeph>demix</codeph> module.</p>
+            <p>While block elements often serve as containers, other structures such as list items and table cells may also act as containers for mixed content.</p>
+        </section>
+        
+        <section>
+            <title>Redundant Wrapping</title>
+            <p>Another frequent issue in authoring is <term>overly wrapping</term>—placing lists, tables, or other block elements inside a container that also holds inline content. For example:</p>
+            <pre>&lt;p&gt;
+  This is a paragraph.
+  &lt;ul&gt;
+    &lt;li&gt;List item&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/p&gt;      </pre>
+            <p>If we merely demix this structure, we get:</p>
+            <pre>&lt;p&gt;
+  &lt;div&gt;This is a paragraph.&lt;/div&gt;
+  &lt;ul&gt;
+    &lt;li&gt;List item&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/p&gt;      </pre>
+            <p>This is formally correct but still redundant. It is better to rewrite the structure as:</p>
+            <pre>&lt;p&gt;This is a paragraph.&lt;/p&gt;
+&lt;ul&gt;
+  &lt;li&gt;List item&lt;/li&gt;
+&lt;/ul&gt;      </pre>
+            <p>Authors often place lists, notes, or tables inside paragraphs instead of making them adjacent siblings. The demix process detects and eliminates such redundant containers.</p>
+        </section>
+        
+        <section>
+            <title>Placement</title>
+            <p>This functionality is implemented in the following stylesheet:</p>
+            <p><filepath>lib/xatool/dita/xsl-2.0/guts/classify.xsl</filepath></p>
+        </section>
+        
+        <section>
+            <title>Usage</title>
+            <p>Assume that the variable <varname>rebuilt</varname> contains a document resulting from a previous processing step. You can normalize mixed content using the following expression:</p>
+            <pre>&lt;xsl:variable name="demixed"&gt;
+  &lt;xsl:apply-templates select="$rebuilt/*[xat:dita.isMap(.)]" mode="xat.dita.demix"/&gt;
+&lt;/xsl:variable&gt;      </pre>
+            <p>This creates a normalized version of the input document, which is then available in the <varname>demixed</varname> variable for further processing.</p>
+        </section>
+        
+        <section>
+            <title>Functions</title>
+            <p>Each function accepts a DITA element as its argument and returns a boolean value or string based on its demixing role. These functions are invoked internally by the <codeph>xat.dita.demix</codeph> template and its related modes.</p>
+            
+            <table>
+                <title>Demixing Functions</title>
+                <tgroup cols="2">
+                    <colspec colname="fn" colwidth="1*"/>
+                    <colspec colname="desc" colwidth="3*"/>
+                    <thead>
+                        <row>
+                            <entry>Function</entry>
+                            <entry>Description</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry><codeph>xat:dita.demix.isBlock</codeph></entry>
+                            <entry>Returns <codeph>true()</codeph> if the element is treated as a block node during demixing.</entry>
+                        </row>
+                        <row>
+                            <entry><codeph>xat:dita.demix.isInline</codeph></entry>
+                            <entry>Returns <codeph>true()</codeph> if the node is considered inline (including text nodes).</entry>
+                        </row>
+                        <row>
+                            <entry><codeph>xat:dita.demix.isContainer</codeph></entry>
+                            <entry>Returns <codeph>true()</codeph> for elements allowed to contain mixed content (e.g., <xmlelement>p</xmlelement>, <xmlelement>li</xmlelement>).</entry>
+                        </row>
+                        <row>
+                            <entry><codeph>xat:dita.demix.isMixed</codeph></entry>
+                            <entry>Returns <codeph>true()</codeph> if the container includes both block and inline content.</entry>
+                        </row>
+                        <row>
+                            <entry><codeph>xat:dita.demix.isRedundantContainer</codeph></entry>
+                            <entry>Returns <codeph>true()</codeph> if a container becomes unnecessary after demixing (e.g., a <xmlelement>p</xmlelement> wrapping only block content).</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+        </section>
+        
+        <section>
+            <title>Modifying Default Behavior</title>
+            <p>Each function is implemented as an <xmlelement>xsl:function</xmlelement> that delegates to a template in a mode with the corresponding name. For example, the function <codeph>xat:dita.demix.isBlock</codeph> uses templates in mode <codeph>xat.dita.demix.isBlock</codeph>.</p>
+            <p>To change the classification of a specific element, define a higher-priority template in the corresponding mode. For example, to treat an element as a block for demixing purposes, add a custom template in mode <codeph>xat.dita.demix.isBlock</codeph> that matches the element and returns <codeph>true()</codeph>.</p>
+        </section>
+        
+    </refbody>
+</reference>

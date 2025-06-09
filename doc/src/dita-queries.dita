@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="reference_o8ru_57fh" xml:lang="en">
+    <title>DITA Query Functions</title>
+    <refbody>
+        
+        <section>
+            <title>Purpose</title>
+            <p>This module provides a set of utility templates and functions used throughout the XATOOL pipeline to query properties of DITA elements, such as their identity, structural role, language, nesting level, and metadata. These queries are used in classification, document analysis, formatting, and preprocessing stages.</p>
+        </section>
+        
+        <section>
+            <title>Placement</title>
+            <p>This functionality is implemented in the following stylesheet:</p>
+            <p><filepath>lib/dtea/queries/guts/*.xsl</filepath></p>
+        </section>
+        
+        <section>
+            <title>Functions</title>
+            <p>Each function accepts a DITA element as an argument and returns a boolean value or a string depending on its query purpose.</p>
+            <table>
+                <tgroup cols="2">
+                    <thead>
+                        <row>
+                            <entry>Function</entry>
+                            <entry>Description</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry><codeph>xat:dita.id($element)</codeph></entry>
+                            <entry>Returns the value of <xmlatt>id</xmlatt> if present, otherwise generates a temporary ID using <codeph>generate-id()</codeph>.</entry>
+                        </row>
+                        <row>
+                            <entry><codeph>xat:dita.local($element)</codeph></entry>
+                            <entry>Extracts the language code (e.g. "en") from the <xmlatt>xml:lang</xmlatt> attribute or inherits it from the parent.</entry>
+                        </row>
+                        <row>
+                            <entry><codeph>xat:dita.lang($element)</codeph></entry>
+                            <entry>Alias to <codeph>xat:dita.local()</codeph>, normalized to the language prefix (e.g. "en" from "en-US").</entry>
+                        </row>
+                        <row>
+                            <entry><codeph>xat:dita.makeLocalCode($lang, $country)</codeph></entry>
+                            <entry>Builds a local code in the format <codeph>en-US</codeph>.</entry>
+                        </row>
+                        <row>
+                            <entry><codeph>xat:dita.makeLocalSuffix($lang, $country)</codeph></entry>
+                            <entry>Builds a local suffix in the format <codeph>en_US</codeph>.</entry>
+                        </row>
+                        <row>
+                            <entry><codeph>xat:dita.isTerminalTopic($topic)</codeph></entry>
+                            <entry>Returns <codeph>true</codeph> if the topic has no nested topics.</entry>
+                        </row>
+                        <row>
+                            <entry><codeph>xat:dita.isFolderTopic($topic)</codeph></entry>
+                            <entry>Returns <codeph>true</codeph> if the topic contains other topics.</entry>
+                        </row>
+                        <row>
+                            <entry><codeph>xat:dita.isStructNode($element)</codeph></entry>
+                            <entry>Returns <codeph>true</codeph> for maps and topics (structural nodes).</entry>
+                        </row>
+                        <row>
+                            <entry><codeph>xat:dita.hasDirectContent($topic)</codeph></entry>
+                            <entry>Returns <codeph>true</codeph> if the topic contains a <xmlelement>body</xmlelement> element.</entry>
+                        </row>
+                        <row>
+                            <entry><codeph>xat:dita.level($topic)</codeph></entry>
+                            <entry>Returns the nesting level of the topic within its parent topics.</entry>
+                        </row>
+                        <row>
+                            <entry><codeph>xat:dita.plainTextTitle($element)</codeph></entry>
+                            <entry>Returns the normalized text of the element’s <xmlelement>title</xmlelement>.</entry>
+                        </row>
+                        <row>
+                            <entry><codeph>xat:dita.plainTextDocTitle($element)</codeph></entry>
+                            <entry>Returns the title of the root map or bookmap.</entry>
+                        </row>
+                        <row>
+                            <entry><codeph>xat:dita.fileUri($element)</codeph></entry>
+                            <entry>Returns a resolved file URI based on <xmlatt>xtrf</xmlatt>, using the <codeph>xat:path.2uri</codeph> utility.</entry>
+                        </row>
+                        <row>
+                            <entry><codeph>xat:dita.othermeta($element, $name)</codeph></entry>
+                            <entry>Retrieves the value of a named <xmlelement>othermeta</xmlelement> from a topic or map.</entry>
+                        </row>
+                        <row>
+                            <entry><codeph>xat:dita.directOthermeta($element, $name)</codeph></entry>
+                            <entry>Returns a directly defined <xmlelement>othermeta</xmlelement> (not inherited from a map).</entry>
+                        </row>
+                        <row>
+                            <entry><codeph>xat:dita.hasClass($element, $classList)</codeph></entry>
+                            <entry>Checks whether the element’s <xmlatt>class</xmlatt> contains any of the specified tokens.</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+        </section>
+        
+    </refbody>
+</reference>

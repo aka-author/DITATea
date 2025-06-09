@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE reference PUBLIC "-//OASIS//DTD DITA Reference//EN" "reference.dtd">
+<reference id="reference_urhm_0he4" xml:lang="en">
+    <title>Superclass Detection in DITA Web Output</title>
+    <refbody>
+        
+        <section>
+            <title>Purpose</title>
+            <p>The superclass detection system groups DITA elements into behavioral categories such as block, inline, list, or table component. These categories inform formatting logic in the DITAToo Web Output Plug-In by providing layout hints for CSS-based HTML output.</p>
+        </section>
+        
+        <section>
+            <title>Placement</title>
+            <p>This functionality is implemented in the following stylesheet:</p>
+            <p><filepath>lib/ditatea/queries/guts/superclass-queries.xsl</filepath></p>
+        </section>
+        
+        <section>
+            <title>Functions</title>
+            <table>
+                <title>Superclass Detection Functions</title>
+                <tgroup cols="2">
+                    <thead>
+                        <row>
+                            <entry>Function</entry>
+                            <entry>Returns</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry><codeph><apiname>dtea:isInline</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the element behaves as an inline
+                                element</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:isBlock</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the element behaves as a block
+                                element</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:isList</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the element is a list container (e.g.,
+                                    <xmlelement>ul</xmlelement>,
+                                <xmlelement>ol</xmlelement>)</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:isListItem</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the element is a list item (e.g.,
+                                    <xmlelement>li</xmlelement>)</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:isTable</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the element is a table
+                                container</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:isTableRow</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the element is a table row</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:isTableEntry</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the element is a table entry</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:isTopic</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the element is a topic.</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:isMap</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the element is a map</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:isTopicBlock</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the element is part of a topic
+                                structure (e.g., <xmlelement>body</xmlelement>,
+                                    <xmlelement>title</xmlelement>)</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:superclass</apiname>($element)</codeph></entry>
+                            <entry>A space-separated string of <xref
+                                    href="dita-element-superclasses.dita">superclasses</xref>
+                                assigned to a given element</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+            
+            <p>The following functions are not directly related to superclass classification but allow developers to test whether a DITA element has specific structural or semantic characteristics.</p>
+            
+            <table id="dtea-topic-functions">
+                <title>Topic Detection Functions</title>
+                <tgroup cols="2">
+                    <thead>
+                        <row>
+                            <entry>Function</entry>
+                            <entry>Returns</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry><codeph><apiname>dtea:isTerminalTopic</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the topic has no nested topics</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:isFolderTopic</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the topic contains nested topics</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:isStructNode</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the element is a topic or a map</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:hasDirectContent</apiname>($topic)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the topic contains direct body content</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+            
+            <table id="dtea-map-functions">
+                <title>Map Detection Functions</title>
+                <tgroup cols="2">
+                    <thead>
+                        <row>
+                            <entry>Function</entry>
+                            <entry>Returns</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry><codeph><apiname>dtea:isBookmap</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the element is a bookmap</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:isRegularMap</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the element is a map that is not a bookmap</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+            
+            <table id="dtea-title-functions">
+                <title>Title and Desc Detection Functions</title>
+                <tgroup cols="2">
+                    <thead>
+                        <row>
+                            <entry>Function</entry>
+                            <entry>Returns</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry><codeph><apiname>dtea:isBookmapTitle</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the element is the main title of a bookmap</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:isMapTitle</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the element is the title of a map</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:isDocTitle</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the element is the document-level title in a map</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:isTopicTitle</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the element is the title of a topic</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:isDesc</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the element is
+                                    <xmlelement>desc</xmlelement> or is based on it</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+            <table id="table_vpv_3qp_nfc">
+                <title>Figure Detection Functions</title>
+                <tgroup cols="2">
+                    <thead>
+                        <row>
+                            <entry>Function</entry>
+                            <entry>Returns</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry><codeph><apiname>dtea:isFig</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the element is a figure</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+            
+            <table id="dtea-crossref-functions">
+                <title>Cross-Reference Detection Functions</title>
+                <tgroup cols="2">
+                    <thead>
+                        <row>
+                            <entry>Function</entry>
+                            <entry>Returns</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry><codeph><apiname>dtea:isCrossref</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the element is a cross-reference (xref or link)</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:isValidCrossrefTarget</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the element may be targeted by a cross-reference</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:isCrossrefTarget</apiname>($xref,
+                                    $element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the element is the actual target of the given cross-reference</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:isBroken</apiname>($xref)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the cross-reference is broken (no target found)</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+            
+            <table id="dtea-table-detection-functions">
+                <title>Table Detection Functions</title>
+                <desc><p>A <term>CALS table</term> is a table model originally developed by the U.S. Department of Defense for SGML and later adopted by DITA. It uses structured XML elements to define rows, columns, and cells, supporting complex features like row and column spans, alignment, and column specifications via <xmlelement>colspec</xmlelement>. CALS tables are widely used in technical documentation due to their flexibility and semantic structure.</p>
+                    
+                    <p>In DITA, two table models are commonly used: full-blown tables (i.e. CALS tables) and simplified tables. Additionally, some DITA domains define specializations of simplified tables, such as property lists in reference topics. Since CALS tables require more advanced formatting logic, specific detection functions are provided to identify them and their components reliably.</p>
+                </desc>
+                <tgroup cols="2">
+                    <thead>
+                        <row>
+                            <entry>Function</entry>
+                            <entry>Returns</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry><codeph><apiname>dtea:isTableHeadEntry</apiname>($entry)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the entry belongs to the table head or is treated as such</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:isTableBodyEntry</apiname>($entry)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the entry belongs to the table body or foot</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:isCALSTableEntry</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the element is a CALS table entry</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:isCALSTableRow</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the element is a CALS table row</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:isCALSTable</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the element is a CALS table container</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:isAbsWidthColspec</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the colspec has an absolute width</entry>
+                        </row>
+                        <row>
+                            <entry><codeph><apiname>dtea:isRelWidthColspec</apiname>($element)</codeph></entry>
+                            <entry><codeph>true()</codeph> if the colspec has a relative width using <codeph>*</codeph></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+        
+           
+        
+        </section>
+        
+        
+        <section>
+            <title>Modifying Default Behavior</title>
+            <p>Each detection function delegates to an internal template using a corresponding mode.
+                For example, the <codeph>dtea:isBlock</codeph> function applies a template in mode
+                    <codeph>dtea:isBlock</codeph> to the element it receives as an argument.</p>
+            <p>To change the superclass behavior for a specific element, you can override the default template with a higher-priority template using the same mode. This technique allows you to customize formatting classification without altering the base detection logic.</p>
+        </section>
+        
+    </refbody>
+</reference>
