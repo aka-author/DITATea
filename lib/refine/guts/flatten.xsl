@@ -111,8 +111,22 @@
     </xsl:template>
 
 
+    <xsl:template match="processing-instruction()" mode="dtea:flatten.parse" priority="10"/>
+
+
+    <xsl:template match="*[contains(@class, ' map/topicref ')]" mode="dtea:flatten.parse">
+
+        <xsl:copy>
+            <xsl:copy-of select="@*[name() != 'id']"/>
+            <xsl:attribute name="topicId" select="@id"/>
+            <xsl:apply-templates select="*" mode="dtea:flatten.parse"/>
+        </xsl:copy>
+
+    </xsl:template>
+
+
     <xsl:template match="@* | node()" mode="dtea:flatten.parse">
-        
+
         <xsl:param name="flattenRules"/>
 
         <xsl:copy>
@@ -123,7 +137,7 @@
                 </xsl:attribute>
             </xsl:if>
 
-            <xsl:apply-templates select="@* | node()" mode="dtea:flatten.parse">
+            <xsl:apply-templates select="@* | node()" mode="#current">
                 <xsl:with-param name="flattenRules" select="$flattenRules"/>
             </xsl:apply-templates>
 
@@ -162,26 +176,28 @@
 
 
     <xsl:template match="*" mode="dtea:flatten.uniquePageFileNameBase">
-
-        <xsl:choose>
-            <xsl:when test="empty(@pageFileName)">
-                <xsl:value-of select="generate-id(.)"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:value-of select="@pageFileName"/>
-            </xsl:otherwise>
-        </xsl:choose>
-
-    </xsl:template>
-
-    <xsl:template match="*[not(dtea:flatten.hasOwnContent(.))]"
-        mode="dtea:flatten.uniquePageFileNameBase">
         <xsl:value-of select="generate-id(.)"/>
     </xsl:template>
 
+    <xsl:template match="*[dtea:isTopic(.) and dtea:flatten.hasOwnContent(.) and @pageFileName]"
+        mode="dtea:flatten.uniquePageFileNameBase">
+        <xsl:value-of select="@pageFileName"/>
+    </xsl:template>
+
+    <xsl:template match="*[not(dtea:isTopic(.))]" mode="dtea:flatten.uniquePageFileNameBase">
+        <xsl:value-of select="dtea:flatten.uniquePageFileNameBase(ancestor::*[dtea:isTopic(.)][1])"/>
+    </xsl:template>
+
     <xsl:function name="dtea:flatten.uniquePageFileNameBase" as="xs:string">
-        <xsl:param name="topic" as="element(*)"/>
-        <xsl:apply-templates select="$topic" mode="dtea:flatten.uniquePageFileNameBase"/>
+
+        <xsl:param name="topic"/>
+
+        <xsl:variable name="rawBase">
+            <xsl:apply-templates select="$topic" mode="dtea:flatten.uniquePageFileNameBase"/>
+        </xsl:variable>
+
+        <xsl:value-of select="$rawBase"/>
+
     </xsl:function>
 
 </xsl:stylesheet>

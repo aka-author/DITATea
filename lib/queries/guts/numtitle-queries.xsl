@@ -168,19 +168,43 @@
 
     <!-- ID to be used by cross-references in the output document to point to the element -->
 
-    <xsl:template match="*" mode="dtea:crossref.exposedId">        
-        <xsl:value-of select="dtea:outId(.)"/> 
+    <xsl:template match="*" mode="dtea:crossref.exposedId">
+        <xsl:value-of select="dtea:outId(.)"/>
     </xsl:template>
 
     <xsl:function name="dtea:crossref.exposedId">
-        
+
         <xsl:param name="element"/>
-        
+
         <xsl:apply-templates select="$element" mode="dtea:crossref.exposedId"/>
-        
+
+    </xsl:function>
+
+    <xsl:function name="dtea:crossref.exposedIdById">
+
+        <xsl:param name="id"/>
+        <xsl:param name="docRoot"/>
+
+        <xsl:variable name="fastExposedId"
+            select="dtea:enumerate.entryById($id, $docRoot)/@exposedId"/>
+
+        <xsl:choose>
+
+            <xsl:when test="$fastExposedId != ''">
+                <xsl:value-of select="$fastExposedId"/>
+            </xsl:when>
+
+            <xsl:otherwise>
+                <xsl:value-of select="dtea:crossref.exposedId($docRoot//*[@id = $id])"/>
+            </xsl:otherwise>
+
+        </xsl:choose>
+
     </xsl:function>
 
     <!-- Entire cross-reference content -->
+
+    <xsl:template match="*" mode="dtea:crossref.wording"/>
 
     <xsl:template match="*" mode="dtea:crossref.exposedContent">
 
@@ -190,6 +214,29 @@
         </xsl:if>
 
         <xsl:apply-templates select="." mode="dtea:crossref.wording"/>
+
+    </xsl:template>
+
+
+    <xsl:template name="dtea:crossref.exposedContentById">
+
+        <xsl:param name="id"/>
+        <xsl:param name="docRoot"/>
+
+        <xsl:variable name="entry" select="dtea:enumerate.entryById($id, $docRoot)"/>
+
+        <xsl:choose>
+
+            <xsl:when test="exists($entry/@idref)">
+                <xsl:copy-of select="$entry/dtea:exposedContent/node()"/>
+            </xsl:when>
+
+            <xsl:otherwise>
+                <xsl:apply-templates select="$docRoot//*[@id = $id]"
+                    mode="dtea:crossref.exposedContent"/>
+            </xsl:otherwise>
+
+        </xsl:choose>
 
     </xsl:template>
 

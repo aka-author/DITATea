@@ -263,7 +263,9 @@
                     <xsl:value-of select="*[dtea:isTitle(.)]"/>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:value-of select="normalize-space(./*[1]/*[dtea:isTitle(.)])"/>
+                    <xsl:value-of
+                        select="normalize-space(.//*[name() = 'opentopic:map']/*[dtea:isTitle(.)])"
+                    />
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
@@ -536,6 +538,83 @@
         Cross-refeences
     -->
 
+    <!-- Detecting cross-references -->
+
+    <xsl:template match="*" mode="dtea:isCrossref" as="xs:boolean">
+        <xsl:sequence select="false()"/>
+    </xsl:template>
+
+    <xsl:template match="*[dtea:hasClass(., 'topic/xref topic/link')]" mode="dtea:isCrossref"
+        as="xs:boolean">
+        <xsl:sequence select="true()"/>
+    </xsl:template>
+
+    <xsl:function name="dtea:isCrossref" as="xs:boolean">
+
+        <xsl:param name="element"/>
+
+        <xsl:apply-templates select="$element" mode="dtea:isCrossref"/>
+
+    </xsl:function>
+
+    <!-- The ID of the element's parent topic -->
+
+    <xsl:template match="*[dtea:isStructNode(.)]" mode="dtea:topicId">
+        <xsl:value-of select="dtea:id(.)"/>
+    </xsl:template>
+
+    <xsl:template match="*[not(dtea:isStructNode(.))]" mode="dtea:topicId">
+        <xsl:value-of select="dtea:id(ancestor::*[dtea:isTopic(.)][1])"/>
+    </xsl:template>
+
+    <xsl:function name="dtea:topicId">
+
+        <xsl:param name="element"/>
+
+        <xsl:apply-templates select="$element" mode="dtea:topicId"/>
+
+    </xsl:function>
+
+    <!-- The ID of the target of a cross-reference -->
+
+    <xsl:template match="*" mode="dtea:crossref.targetId"/>
+
+    <xsl:template match="*[dtea:isCrossref(.)]" mode="dtea:crossref.targetId">
+
+        <xsl:choose>
+
+            <xsl:when test="contains(@href, '/')">
+                <xsl:value-of select="substring-after(@href, '/')"/>
+            </xsl:when>
+
+            <xsl:otherwise>
+                <xsl:value-of select="substring-after(@href, '#')"/>
+            </xsl:otherwise>
+
+        </xsl:choose>
+
+    </xsl:template>
+
+    <xsl:function name="dtea:crossref.targetId">
+
+        <xsl:param name="crossref"/>
+
+        <xsl:apply-templates select="$crossref" mode="dtea:crossref.targetId"/>
+
+    </xsl:function>
+
+    <!-- Detecting a broken link -->
+
+    <xsl:template match="*[dtea:isCrossref(.)]" mode="dtea:isBroken" as="xs:boolean">
+
+        <xsl:variable name="tid" select="dtea:crossref.targetId(.)"/>
+
+        <xsl:value-of select="not(exists(root(.)//*[dtea:isCrossrefTarget(current(), .)]))"/>
+
+    </xsl:template>
+
+    <!-- Detecting elements allowed to be targets of cross-references -->
+
     <xsl:template match="*" mode="dtea:isValidCrossrefTarget" as="xs:boolean">
         <xsl:sequence select="true()"/>
     </xsl:template>
@@ -553,6 +632,7 @@
 
     </xsl:function>
 
+    <!-- Testing if an element is the target of a cross-reference -->
 
     <xsl:template match="*[dtea:isCrossref(.)]" mode="dtea:isCrossrefTarget" as="xs:boolean">
 
@@ -583,64 +663,15 @@
     </xsl:function>
 
 
-    <xsl:template match="*" mode="dtea:isCrossref" as="xs:boolean">
-        <xsl:sequence select="false()"/>
-    </xsl:template>
-
-    <xsl:template match="*[dtea:hasClass(., 'topic/xref topic/link')]" mode="dtea:isCrossref"
-        as="xs:boolean">
-        <xsl:sequence select="true()"/>
-    </xsl:template>
-
-    <xsl:function name="dtea:isCrossref" as="xs:boolean">
-
-        <xsl:param name="element"/>
-
-        <xsl:apply-templates select="$element" mode="dtea:isCrossref"/>
-
-    </xsl:function>
-
-
-    <xsl:template match="*[dtea:isCrossref(.)]" mode="dtea:crossref.targetId">
-
-        <xsl:choose>
-            <xsl:when test="contains(@href, '/')">
-                <xsl:value-of select="substring-after(@href, '/')"/>
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:value-of select="substring-after(@href, '#')"/>
-            </xsl:otherwise>
-        </xsl:choose>
-
-    </xsl:template>
-
-    <xsl:function name="dtea:crossref.targetId">
-
-        <xsl:param name="crossref"/>
-
-        <xsl:apply-templates select="$crossref" mode="dtea:crossref.targetId"/>
-
-    </xsl:function>
-
-
-    <xsl:template match="*[dtea:isCrossref(.)]" mode="dtea:isBroken" as="xs:boolean">
-
-        <xsl:variable name="tid" select="dtea:crossref.targetId(.)"/>
-
-        <xsl:value-of select="not(exists(root(.)//*[dtea:isCrossrefTarget(current(), .)]))"/>
-
-    </xsl:template>
-
-
     <!-- 
         Lists
     -->
-    
+
     <xsl:template match="*[dtea:isList(.)]" mode="dtea:level" as="xs:integer">
-        <xsl:value-of select="count(ancestor::*[dtea:isList(.)]) + 1"/>    
+        <xsl:value-of select="count(ancestor::*[dtea:isList(.)]) + 1"/>
     </xsl:template>
-    
-    
+
+
     <!-- 
         Figures
     -->
@@ -660,33 +691,33 @@
         <xsl:apply-templates select="$element" mode="dtea:isFig"/>
 
     </xsl:function>
-    
-    
+
+
     <!-- 
         Notes
     -->
-    
+
     <xsl:template match="*" mode="dtea:isNote" as="xs:boolean">
         <xsl:sequence select="false()"/>
     </xsl:template>
-    
+
     <xsl:template match="*[contains(@class, ' topic/note ')]" mode="dtea:isNote" as="xs:boolean">
         <xsl:sequence select="true()"/>
     </xsl:template>
-    
+
     <xsl:function name="dtea:isNote" as="xs:boolean">
-        
+
         <xsl:param name="element"/>
-        
+
         <xsl:apply-templates select="$element" mode="dtea:isNote"/>
-        
+
     </xsl:function>
-    
-    
+
+
     <xsl:template match="*[dtea:isNote(.) and @type]" mode="dtea:type">
         <xsl:sequence select="@type"/>
     </xsl:template>
-    
+
 
     <!-- 
         Description

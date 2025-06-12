@@ -27,12 +27,7 @@
     <xsl:template match="*[contains(@class, ' hi-d/i ')]" mode="dtea:outElementName">
         <xsl:value-of select="'i'"/>
     </xsl:template>
-
-
-    <xsl:template match="*[contains(@class, ' topic/lq ')]" mode="dtea:outElementName">
-        <xsl:value-of select="'blockquote'"/>
-    </xsl:template>
-
+    
 
     <xsl:template match="*[contains(@class, ' topic/q ')]" mode="dtea:outElementName">
         <xsl:value-of select="'q'"/>

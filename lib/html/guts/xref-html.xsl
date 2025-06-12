@@ -27,12 +27,11 @@
     -->
 
     <xsl:template match="*[dtea:isCrossref(.)]" mode="dtea:html.crossref.anchor">
-
-        <xsl:variable name="targetExposedId"
-            select="dtea:crossref.exposedId(root(.)//*[dtea:isCrossrefTarget(current(), .)])"/>
-
-        <xsl:value-of select="concat('#', $targetExposedId)"/>
-
+        
+        <xsl:variable name="tid" select="dtea:crossref.targetId(.)"/>
+        
+        <xsl:value-of select="concat('#', dtea:crossref.exposedIdById($tid, root(.)))"/>
+        
     </xsl:template>
 
 
@@ -47,8 +46,10 @@
     <xsl:template match="*[dtea:isCrossref(.) and not(dtea:hasContent(.))]"
         mode="dtea:html.crossref.content">
 
-        <xsl:apply-templates select="root(.)//*[dtea:isCrossrefTarget(current(), .)]"
-            mode="dtea:crossref.exposedContent"/>
+        <xsl:call-template name="dtea:crossref.exposedContentById">
+            <xsl:with-param name="id" select="dtea:crossref.targetId(.)"/>
+            <xsl:with-param name="docRoot" select="root(.)"/>
+        </xsl:call-template>
 
     </xsl:template>
 
@@ -66,10 +67,12 @@
 
 
     <xsl:template match="*[dtea:isCrossref(.) and not(@scope = 'external')]">
+
         <a>
             <xsl:apply-templates select="." mode="dtea:outAttrs"/>
             <xsl:apply-templates select="." mode="dtea:html.crossref.content"/>
         </a>
+
     </xsl:template>
 
 

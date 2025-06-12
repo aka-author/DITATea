@@ -6,5 +6,6 @@
     
     <xsl:import href="guts/demix.xsl"/>
     <xsl:import href="guts/flatten.xsl"/>
+    <xsl:import href="guts/enumerate.xsl"/>
    
 </xsl:stylesheet>
