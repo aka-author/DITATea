@@ -8,22 +8,22 @@
 
 
     <xsl:template match="*[contains(@class, ' task/step ')]" mode="dtea:html.markerContent">
-        
+
         <xsl:value-of
             select="concat(count(preceding-sibling::*[contains(@class, ' task/step ')]) + 1, '.')"/>
-        
+
     </xsl:template>
 
 
     <xsl:template match="*[contains(@class, ' task/substep ')]" mode="dtea:html.markerContent">
-        
+
         <xsl:variable name="substepNumber"
             select="count(preceding-sibling::*[contains(@class, ' task/substep ')]) + 1"/>
-        
+
         <xsl:variable name="alph" select="'abcdefghijklmnopqrstuvwxyz'"/>
-        
+
         <xsl:value-of select="concat(substring($alph, $substepNumber, 1), ')')"/>
-        
+
     </xsl:template>
 
 
@@ -45,10 +45,8 @@
 
         <div>
 
-            <xsl:apply-templates select="." mode="dtea:outAttrs">
-                <xsl:with-param name="directCSSClassName" select="'block dita__task step'"/>
-            </xsl:apply-templates>
-
+            <xsl:apply-templates select="." mode="dtea:outAttrs"/>
+               
             <div>
                 <xsl:apply-templates select="." mode="dtea:html.marker"/>
                 <xsl:apply-templates select="." mode="dtea:html.body"/>
@@ -63,11 +61,11 @@
 
         <div>
 
-            <xsl:apply-templates select="." mode="dtea:outAttrs">
-                <xsl:with-param name="defaultCSSClassName" select="'block dita__task stepsection'"/>
-            </xsl:apply-templates>
-
-            <xsl:apply-templates/>
+            <xsl:apply-templates select="." mode="dtea:outAttrs"/>
+                
+            <div>
+                <xsl:apply-templates/>
+            </div>
 
         </div>
 
