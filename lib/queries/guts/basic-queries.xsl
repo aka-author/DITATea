@@ -237,7 +237,11 @@
     -->
 
     <xsl:template match="*[dtea:isTopic(.)]" mode="dtea:level" as="xs:integer">
-        <xsl:value-of select="count(parent::*[dtea:isTopic(.)]) + 1"/>
+        <xsl:value-of select="count(ancestor::*[dtea:isTopic(.)]) + 1"/>
+    </xsl:template>
+    
+    <xsl:template match="*[dtea:isTopicTitle(.)]" mode="dtea:level" as="xs:integer">
+        <xsl:value-of select="dtea:level(..)"/>
     </xsl:template>
 
 
