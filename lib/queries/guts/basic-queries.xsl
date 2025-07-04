@@ -239,7 +239,7 @@
     <xsl:template match="*[dtea:isTopic(.)]" mode="dtea:level" as="xs:integer">
         <xsl:value-of select="count(ancestor::*[dtea:isTopic(.)]) + 1"/>
     </xsl:template>
-    
+
     <xsl:template match="*[dtea:isTopicTitle(.)]" mode="dtea:level" as="xs:integer">
         <xsl:value-of select="dtea:level(..)"/>
     </xsl:template>
@@ -358,6 +358,23 @@
         <xsl:apply-templates select="$element" mode="dtea:isMapTitle"/>
     </xsl:function>
 
+    <!-- opentopic:map -->
+
+    <xsl:template match="*" mode="dtea:isOpentopicMap" as="xs:boolean">
+        <xsl:sequence select="false()"/>
+    </xsl:template>
+
+    <xsl:template
+        match="*[local-name() = 'map' and namespace-uri() = 'http://www.idiominc.com/opentopic']"
+        mode="dtea:isOpentopicMap" as="xs:boolean">
+        <xsl:sequence select="true()"/>
+    </xsl:template>
+
+    <xsl:function name="dtea:isOpentopicMap" as="xs:boolean">
+        <xsl:param name="element"/>
+        <xsl:apply-templates select="$element" mode="dtea:isOpentopicMap"/>
+    </xsl:function>
+
     <!-- document title -->
 
     <xsl:template match="*" mode="dtea:isDocTitle" as="xs:boolean">
@@ -448,6 +465,69 @@
         Working with metadata
     -->
 
+    <!-- othermeta -->
+
+    <xsl:template match="*" mode="dtea:isOthermeta" as="xs:boolean">
+        <xsl:sequence select="false()"/>
+    </xsl:template>
+
+    <xsl:template match="*[contains(@class, ' topic/othermeta ')]" mode="dtea:isOthermeta"
+        as="xs:boolean">
+        <xsl:sequence select="true()"/>
+    </xsl:template>
+
+    <xsl:function name="dtea:isOthermeta" as="xs:boolean">
+        <xsl:param name="element"/>
+        <xsl:apply-templates select="$element" mode="dtea:isOthermeta"/>
+    </xsl:function>
+
+    <!-- topicmeta -->
+
+    <xsl:template match="*" mode="dtea:isTopicmeta" as="xs:boolean">
+        <xsl:sequence select="false()"/>
+    </xsl:template>
+
+    <xsl:template match="*[contains(@class, ' map/topicmeta ')]" mode="dtea:isTopicmeta"
+        as="xs:boolean">
+        <xsl:sequence select="true()"/>
+    </xsl:template>
+
+    <xsl:function name="dtea:isTopicmeta" as="xs:boolean">
+        <xsl:param name="element"/>
+        <xsl:apply-templates select="$element" mode="dtea:isTopicmeta"/>
+    </xsl:function>
+
+    <!-- metadata -->
+
+    <xsl:template match="*" mode="dtea:isMetadata" as="xs:boolean">
+        <xsl:sequence select="false()"/>
+    </xsl:template>
+
+    <xsl:template match="*[contains(@class, ' topic/metadata ')]" mode="dtea:isMetadata"
+        as="xs:boolean">
+        <xsl:sequence select="true()"/>
+    </xsl:template>
+
+    <xsl:function name="dtea:isMetadata" as="xs:boolean">
+        <xsl:param name="element"/>
+        <xsl:apply-templates select="$element" mode="dtea:isMetadata"/>
+    </xsl:function>
+
+    <!-- prolog -->
+
+    <xsl:template match="*" mode="dtea:isProlog" as="xs:boolean">
+        <xsl:sequence select="false()"/>
+    </xsl:template>
+
+    <xsl:template match="*[contains(@class, ' topic/prolog ')]" mode="dtea:isProlog" as="xs:boolean">
+        <xsl:sequence select="true()"/>
+    </xsl:template>
+
+    <xsl:function name="dtea:isProlog" as="xs:boolean">
+        <xsl:param name="element"/>
+        <xsl:apply-templates select="$element" mode="dtea:isProlog"/>
+    </xsl:function>
+
     <!-- Retrieving a value of any othermeta nested to a topic or a map -->
 
     <xsl:template match="*" mode="dtea:othermeta">
@@ -477,6 +557,43 @@
         <xsl:param name="othermetaName"/>
 
         <xsl:apply-templates select="$element" mode="dtea:othermeta">
+            <xsl:with-param name="othermetaName" select="$othermetaName"/>
+        </xsl:apply-templates>
+
+    </xsl:function>
+
+    <!-- a sequence of othermeta values by othermeta/@name -->
+
+    <xsl:template match="*" mode="dtea:othermetaStrings"/>
+
+    <xsl:template match="*[dtea:isTopic(.)]" mode="dtea:othermetaStrings">
+
+        <xsl:param name="othermetaName"/>
+
+        <xsl:for-each
+            select="*[dtea:isProlog(.)]/*[dtea:isMetadata(.)]/*[dtea:isOthermeta(.) and @name = $othermetaName]">
+            <xsl:value-of select="@content"/>
+        </xsl:for-each>
+
+    </xsl:template>
+
+    <xsl:template match="*[dtea:isRegularMap(.)]" mode="dtea:othermetaStrings">
+
+        <xsl:param name="othermetaName"/>
+
+        <xsl:for-each
+            select="*[dtea:isOpentopicMap(.)]/*[dtea:isTopicmeta(.)]/*[dtea:isOthermeta(.) and @name = $othermetaName]">
+            <xsl:value-of select="@content"/>
+        </xsl:for-each>
+
+    </xsl:template>
+
+    <xsl:function name="dtea:othermetaStrings" as="xs:string*">
+
+        <xsl:param name="element"/>
+        <xsl:param name="othermetaName"/>
+
+        <xsl:apply-templates select="$element" mode="dtea:othermetaStrings">
             <xsl:with-param name="othermetaName" select="$othermetaName"/>
         </xsl:apply-templates>
 

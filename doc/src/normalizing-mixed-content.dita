@@ -101,8 +101,13 @@
         
         <section>
             <title>Modifying Default Behavior</title>
-            <p>Each function is implemented as an <xmlelement>xsl:function</xmlelement> that delegates to a template in a mode with the corresponding name. For example, the function <codeph>xat:dita.demix.isBlock</codeph> uses templates in mode <codeph>xat.dita.demix.isBlock</codeph>.</p>
-            <p>To change the classification of a specific element, define a higher-priority template in the corresponding mode. For example, to treat an element as a block for demixing purposes, add a custom template in mode <codeph>xat.dita.demix.isBlock</codeph> that matches the element and returns <codeph>true()</codeph>.</p>
+            <p>Each function is implemented as an <xmlelement>xsl:function</xmlelement> that
+                delegates to a template in a mode with the corresponding name. For example, the
+                function <codeph>xat:dita.demix.isBlock</codeph> uses templates in mode <codeph>xat.dita.demix.isBlock</codeph>.</p>
+            <p>To change the classification of a specific element, define a higher-priority template
+                in the corresponding mode. For example, to treat an element as a block for demixing
+                purposes, add a custom template in mode <codeph>xat.dita.demix.isBlock</codeph> that
+                matches the element and returns <codeph>true()</codeph>.</p>
         </section>
         
     </refbody>

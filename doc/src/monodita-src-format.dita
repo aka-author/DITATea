@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE concept PUBLIC "-//OASIS//DTD DITA Concept//EN" "concept.dtd">
+<concept id="merged-dita-map-format" xml:lang="en">
+    <title>DITATea Merged DITA Map Format</title>
+    <conbody>
+
+        <section>
+            <title>Purpose and Compatibility</title>
+            <p>The source file format accepted by the DITATea library must match the merged DITA map
+                format produced by the DITA Open Toolkit <xmlelement>pdf2</xmlelement> plug-in. For
+                reference, see the <xref
+                    href="https://www.dita-ot.org/dev/reference/pdf-transform" format="html"
+                    scope="external">PDF2 plug-in documentation</xref>. This compatibility
+                guarantees correct traceability, merging, and output rendering.</p>
+        </section>
+
+        <section>
+            <title>Required Namespace Declarations</title>
+            <p>The merged DITA map must declare the required XML namespaces to ensure compatibility
+                with DITA Open Toolkit output and DITATea processing. The root element
+                    (<xmlelement>map</xmlelement> or <xmlelement>bookmap</xmlelement>) must include
+                the following namespace declarations.</p>
+            <table frame="all">
+                <tgroup cols="2">
+                    <colspec colname="prefix" colwidth="3*"/>
+                    <colspec colname="uri" colwidth="7*"/>
+                    <thead>
+                        <row>
+                            <entry>Namespace Prefix</entry>
+                            <entry>Namespace URI</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry>(default namespace)</entry>
+                            <entry><filepath>http://dita.oasis-open.org/architecture/2005/</filepath></entry>
+                        </row>
+                        <row>
+                            <entry><xmlnsname>opentopic</xmlnsname></entry>
+                            <entry><filepath>http://www.idiominc.com/opentopic</filepath></entry>
+                        </row>
+                        <row>
+                            <entry><xmlnsname>dita-ot</xmlnsname></entry>
+                            <entry><filepath>http://www.dita-ot.org/ns/201007/dita-ot</filepath></entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+            <p>The default namespace covers all standard DITA elements. The
+                    <xmlnsname>opentopic</xmlnsname> prefix must be declared for the
+                    <xmlelement>opentopic:map</xmlelement> container. The
+                    <xmlnsname>dita-ot</xmlnsname> prefix is required for processing-specific
+                attributes like <xmlatt>dita-ot:x</xmlatt> and <xmlatt>dita-ot:y</xmlatt> on table
+                cells.</p>
+        </section>
+
+        <section>
+            <title>Root Element</title>
+            <p>The merged file must represent the entire resolved DITA project through its root map
+                element. The root must match the source type.</p>
+            <ul>
+                <li>For a regular map, the root must be <xmlelement>map</xmlelement>.</li>
+                <li>For a book map, the root must be <xmlelement>bookmap</xmlelement>.</li>
+            </ul>
+        </section>
+
+        <section>
+            <title>Topic Hierarchy</title>
+            <p>All referenced topics must be resolved and merged directly into the map structure.
+                Topicless containers, such as empty <xmlelement>topicref</xmlelement> or topicless
+                    <xmlelement>chapter</xmlelement> elements, must be represented by placeholder
+                    <xmlelement>topic</xmlelement> elements to maintain a complete hierarchy.</p>
+        </section>
+
+        <section>
+            <title>Preprocessing Resolution</title>
+            <p>All key references (<xmlatt>keyref</xmlatt>), content references
+                    (<xmlatt>conref</xmlatt>, <xmlatt>conkeyref</xmlatt>), and filtering conditions
+                must be resolved during preprocessing. The merged map contains only resolved
+                content, with no remaining indirect references.</p>
+        </section>
+
+        <section>
+            <title>opentopic:map Element</title>
+            <p>The <xmlelement>opentopic:map</xmlelement> element appears directly under the root
+                    <xmlelement>map</xmlelement> or <xmlelement>bookmap</xmlelement>. It contains
+                the complete resolved map hierarchy, the document-level title structure, and any
+                publication metadata. The <xmlelement>opentopic:map</xmlelement> never contains
+                topic bodies. All fully resolved <xmlelement>topic</xmlelement> elements follow the
+                    <xmlelement>opentopic:map</xmlelement> as direct siblings in the same file.</p>
+        </section>
+
+        <section>
+            <title>Document Titles</title>
+            <p>The merged output must include a complete resolved document title structure. The
+                structure differs for <xmlelement>bookmap</xmlelement> and
+                    <xmlelement>map</xmlelement> roots.</p>
+            <p><b>Book map structure.</b> A <xmlelement>bookmap</xmlelement> root must include:</p>
+            <ul>
+                <li>The root <xmlelement>bookmap</xmlelement> element.</li>
+                <li>A direct child <xmlelement>opentopic:map</xmlelement> that contains: <ul>
+                        <li><xmlelement>booktitle</xmlelement> as the first child, containing all
+                            parts of the resolved book title.</li>
+                        <li><xmlelement>bookmeta</xmlelement> immediately after
+                                <xmlelement>booktitle</xmlelement> if publication-level metadata
+                            exists.</li>
+                        <li>The resolved map hierarchy using <xmlelement>chapter</xmlelement>,
+                                <xmlelement>topicref</xmlelement>,
+                                <xmlelement>topichead</xmlelement>, and valid structural nodes.</li>
+                    </ul></li>
+                <li>All fully resolved <xmlelement>topic</xmlelement> elements appear after
+                        <xmlelement>opentopic:map</xmlelement> as siblings. Each topic includes its
+                    own <xmlelement>title</xmlelement>.</li>
+            </ul>
+            <p>The <xmlelement>booktitle</xmlelement> must include all parts defined in the
+                source.</p>
+            <table frame="all">
+                <tgroup cols="2">
+                    <colspec colname="element" colwidth="3*"/>
+                    <colspec colname="desc" colwidth="7*"/>
+                    <thead>
+                        <row>
+                            <entry>Element</entry>
+                            <entry>Description</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry><xmlelement>mainbooktitle</xmlelement></entry>
+                            <entry>Primary resolved book title text.</entry>
+                        </row>
+                        <row>
+                            <entry><xmlelement>maintitle</xmlelement></entry>
+                            <entry>Optional legacy element. If present, must match
+                                    <xmlelement>mainbooktitle</xmlelement>.</entry>
+                        </row>
+                        <row>
+                            <entry><xmlelement>subtitle</xmlelement></entry>
+                            <entry>Optional subtitle text if defined in the source.</entry>
+                        </row>
+                        <row>
+                            <entry><xmlelement>edition</xmlelement></entry>
+                            <entry>Optional edition information if defined in the source.</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+            <p><b>Regular map structure.</b> A <xmlelement>map</xmlelement> root must include:</p>
+            <ul>
+                <li>The root <xmlelement>map</xmlelement> element.</li>
+                <li>A direct child <xmlelement>opentopic:map</xmlelement> that contains: <ul>
+                        <li><xmlelement>title</xmlelement> as the first child, holding the resolved
+                            map title text.</li>
+                        <li><xmlelement>topicmeta</xmlelement> immediately after
+                                <xmlelement>title</xmlelement> if map-level metadata exists.</li>
+                        <li>The resolved map hierarchy with <xmlelement>topicref</xmlelement>,
+                                <xmlelement>topichead</xmlelement>, and valid nodes. </li>
+                    </ul></li>
+                <li>All resolved <xmlelement>topic</xmlelement> elements appear after
+                        <xmlelement>opentopic:map</xmlelement> as siblings.</li>
+            </ul>
+        </section>
+
+        <section>
+            <title>Accessing Additional Metadata</title>
+            <p>Additional name/value pairs are stored as <xmlelement>othermeta</xmlelement>
+                elements. The exact location depends on the root map type.</p>
+            <p>In a merged <xmlelement>bookmap</xmlelement>, the <xmlelement>othermeta</xmlelement>
+                elements appear inside a <xmlelement>metadata</xmlelement> container, which is
+                nested inside <xmlelement>bookmeta</xmlelement> inside the
+                    <xmlelement>opentopic:map</xmlelement>.</p>
+            <p>In a merged regular <xmlelement>map</xmlelement>, the
+                    <xmlelement>othermeta</xmlelement> elements appear directly inside the
+                    <xmlelement>topicmeta</xmlelement> element inside the
+                    <xmlelement>opentopic:map</xmlelement>.</p>
+            <p>Each <xmlelement>othermeta</xmlelement> provides a single name/value pair using the
+                    <xmlatt>name</xmlatt> and <xmlatt>content</xmlatt> attributes.</p>
+        </section>
+
+
+
+
+
+        <section>
+            <title>DITA Class Attribute</title>
+            <p>Each element must include a valid <xmlatt>class</xmlatt> attribute declaring its DITA
+                specialization.</p>
+        </section>
+
+        <section>
+            <title>Source File Attribute</title>
+            <p>Each element must include an <xmlatt>xtrf</xmlatt> attribute with the absolute URI of
+                its source file for traceability.</p>
+        </section>
+
+        <section>
+            <title>Unique Identifiers and Cross-References</title>
+            <p>In a normal DITA project, every topic, section, table or figure that can be linked to
+                must have an <xmlatt>id</xmlatt> that is unique inside its own file. However, DITA
+                does not require IDs to be unique across the whole project because topics are
+                reusable in different maps and contexts. The same ID might appear in many files, for
+                example, if different topics all have an ID like <codeph>introduction</codeph>. When
+                these files are separate, there is no conflict. But when all topics are merged into
+                a single output document, any repeated IDs would collide if nothing is done to fix
+                them. To avoid this, the merging step generates new globally unique identifiers for
+                every topic, section, table or figure so that each one has exactly one unique ID in
+                the final output.</p>
+            <p>In source DITA files, cross-references rely on this multi-file structure by using a
+                multi-part <xmlatt>href</xmlatt>. A typical cross-reference includes the target file
+                name, the ID of the root topic inside that file, and optionally an ID of an element
+                inside that topic. For example, a link might look like
+                    <codeph>soap.dita#soap_topic/soap_types_table</codeph>. This means: open the
+                file <filepath>soap.dita</filepath>, find the topic with ID
+                    <codeph>soap_topic</codeph>, then find the table with ID
+                    <codeph>soap_types_table</codeph> inside it. When all topics are merged into a
+                single file, filenames are no longer valid and the old multi-part links no longer
+                work. During merging, all cross-references are rewritten to use the new unique IDs
+                only. The result is a simple fragment reference like
+                    <codeph>href="#unique12345"</codeph>. This guarantees that every link goes
+                directly to the right element in the single merged file without depending on old
+                filenames or duplicate IDs.</p>
+        </section>
+
+
+        <section>
+            <title>Table Entry Positioning</title>
+            <p>Each table cell must carry explicit positioning attributes. The table below defines
+                the required attributes for table entries.</p>
+            <table frame="all">
+                <tgroup cols="2">
+                    <thead>
+                        <row>
+                            <entry>Attribute</entry>
+                            <entry>Description</entry>
+                        </row>
+                    </thead>
+                    <tbody>
+                        <row>
+                            <entry><xmlatt>colname</xmlatt></entry>
+                            <entry>Column name if <xmlelement>colspec</xmlelement> elements
+                                exist</entry>
+                        </row>
+                        <row>
+                            <entry><xmlatt>dita-ot:x</xmlatt></entry>
+                            <entry>Column number position for the cell. <note type="attention">Known
+                                    issue: DITA-OT 2.5.4 may miscalculate this if horizontally
+                                    merged cells appear first in a row.</note></entry>
+                        </row>
+                        <row>
+                            <entry><xmlatt>dita-ot:y</xmlatt></entry>
+                            <entry>Row number for the table cell</entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+        </section>
+
+    </conbody>
+</concept>
